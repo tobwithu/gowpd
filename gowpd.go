@@ -203,6 +203,7 @@ func (d *Device) GetReader(id string) (*BufReadCloser, error) {
 	}
 	return NewBufReadCloser(&StreamReader{stream}, int(size)), nil
 }
+
 func (d *Device) CopyFromDevice(dst string, id string) (int64, error) {
 	reader, err := d.GetReader(id)
 	if err != nil {
@@ -218,6 +219,7 @@ func (d *Device) CopyFromDevice(dst string, id string) (int64, error) {
 	defer writer.Close()
 	return io.Copy(writer, reader)
 }
+
 func (d *Device) CopyObjectFromDevice(dst string, obj *Object) (int64, error) {
 	written, err := d.CopyFromDevice(dst, obj.Id)
 	if err != nil {
@@ -264,7 +266,7 @@ func (d *Device) CopyObjectToDevice(parentId string, src io.Reader, obj *Object)
 	}
 
 	writer := NewBufWriteCloser(&StreamWriter{stream}, int(size))
-	n, err := io.Copy(writer, src)
+	n, _ := io.Copy(writer, src)
 	return n, writer.Close()
 }
 
@@ -290,7 +292,7 @@ func (d *Device) SupportsCommand(cmd PROPERTYKEY) bool {
 	}
 	defer cmds.Release()
 
-	n, _, err := cmds.GetCount()
+	n, _, _ := cmds.GetCount()
 	for i := 0; i < n; i++ {
 		c, _, _ := cmds.GetAt(i)
 		if c == cmd {

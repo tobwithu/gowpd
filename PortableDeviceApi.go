@@ -120,7 +120,7 @@ func (o *IPortableDeviceManager) RefreshDeviceList() int32 {
 
 func (o *IPortableDeviceManager) getDeviceString(cmd uintptr, id int) (string, int32, error) {
 	if id >= len(deviceIds) {
-		return "", -1, nil
+		return "", -1, fmt.Errorf("Invalied index : %v", id)
 	}
 	len := 0
 	hr, err := Syscall6(
@@ -131,6 +131,9 @@ func (o *IPortableDeviceManager) getDeviceString(cmd uintptr, id int) (string, i
 		uintptr(0),
 		uintptr(unsafe.Pointer(&len)),
 		0, 0)
+    if hr<0{
+        return "",hr,err
+    }
 	awchar := make([]uint16, len)
 	hr, err = Syscall6(
 		cmd,
@@ -222,6 +225,7 @@ type IPortableDeviceValuesVtbl struct {
 	CopyValuesToPropertyStore                    uintptr
 	Clear                                        uintptr
 }
+
 type IPortableDeviceValues struct {
 	IUnknown
 }
@@ -238,6 +242,7 @@ func (o *IPortableDeviceValues) SetValue(key PROPERTYKEY, val *PROPVARIANT) (int
 		uintptr(unsafe.Pointer(&key)),
 		uintptr(unsafe.Pointer(val)))
 }
+
 func (o *IPortableDeviceValues) GetValue(key PROPERTYKEY) (*PROPVARIANT, int32, error) {
 	var val PROPVARIANT
 	hr, err := Syscall(
@@ -257,6 +262,7 @@ func (o *IPortableDeviceValues) SetStringValue(key PROPERTYKEY, val string) (int
 		uintptr(unsafe.Pointer(&key)),
 		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(val))))
 }
+
 func (o *IPortableDeviceValues) GetStringValue(key PROPERTYKEY) (string, int32, error) {
 	var pwchar uintptr
 	hr, err := Syscall(
@@ -272,6 +278,7 @@ func (o *IPortableDeviceValues) GetStringValue(key PROPERTYKEY) (string, int32, 
 	}
 	return str, hr, err
 }
+
 func (o *IPortableDeviceValues) SetUnsignedIntegerValue(key PROPERTYKEY, val uint32) (int32, error) {
 	return Syscall(
 		o.Vtable().SetUnsignedIntegerValue,
@@ -280,6 +287,7 @@ func (o *IPortableDeviceValues) SetUnsignedIntegerValue(key PROPERTYKEY, val uin
 		uintptr(unsafe.Pointer(&key)),
 		uintptr(val))
 }
+
 func (o *IPortableDeviceValues) GetUnsignedIntegerValue(key PROPERTYKEY) (uint32, int32, error) {
 	var val uint32
 	hr, err := Syscall(
@@ -290,6 +298,7 @@ func (o *IPortableDeviceValues) GetUnsignedIntegerValue(key PROPERTYKEY) (uint32
 		uintptr(unsafe.Pointer(&val)))
 	return val, hr, err
 }
+
 func (o *IPortableDeviceValues) SetUnsignedLargeIntegerValue(key PROPERTYKEY, val uint64) (int32, error) {
 	return Syscall(
 		o.Vtable().SetUnsignedLargeIntegerValue,
@@ -298,6 +307,7 @@ func (o *IPortableDeviceValues) SetUnsignedLargeIntegerValue(key PROPERTYKEY, va
 		uintptr(unsafe.Pointer(&key)),
 		uintptr(val))
 }
+
 func (o *IPortableDeviceValues) GetUnsignedLargeIntegerValue(key PROPERTYKEY) (uint64, int32, error) {
 	var val uint64
 	hr, err := Syscall(
@@ -308,6 +318,7 @@ func (o *IPortableDeviceValues) GetUnsignedLargeIntegerValue(key PROPERTYKEY) (u
 		uintptr(unsafe.Pointer(&val)))
 	return val, hr, err
 }
+
 func (o *IPortableDeviceValues) SetGuidValue(key PROPERTYKEY, val GUID) (int32, error) {
 	return Syscall(
 		o.Vtable().SetGuidValue,
@@ -316,6 +327,7 @@ func (o *IPortableDeviceValues) SetGuidValue(key PROPERTYKEY, val GUID) (int32, 
 		uintptr(unsafe.Pointer(&key)),
 		uintptr(unsafe.Pointer(&val)))
 }
+
 func (o *IPortableDeviceValues) GetGuidValue(key PROPERTYKEY) (GUID, int32, error) {
 	var val GUID
 	hr, err := Syscall(
@@ -381,6 +393,7 @@ type IPortableDeviceVtbl struct {
 	Unadvise       uintptr
 	GetPnPDeviceID uintptr
 }
+
 type IPortableDevice struct {
 	IUnknown
 }
@@ -433,6 +446,7 @@ type IPortableDeviceContentVtbl struct {
 	Move                                uintptr
 	Copy                                uintptr
 }
+
 type IPortableDeviceContent struct {
 	IUnknown
 }
@@ -634,6 +648,7 @@ type IPortableDeviceKeyCollection struct {
 func (o *IPortableDeviceKeyCollection) Vtable() *IPortableDeviceKeyCollectionVtbl {
 	return (*IPortableDeviceKeyCollectionVtbl)(unsafe.Pointer(o.vtbl))
 }
+
 func (o *IPortableDeviceKeyCollection) GetCount() (int, int32, error) {
 	var val int
 	hr, err := Syscall(
@@ -644,6 +659,7 @@ func (o *IPortableDeviceKeyCollection) GetCount() (int, int32, error) {
 		0)
 	return val, hr, err
 }
+
 func (o *IPortableDeviceKeyCollection) GetAt(ind int) (PROPERTYKEY, int32, error) {
 	var val PROPERTYKEY
 	hr, err := Syscall(
@@ -733,6 +749,7 @@ type IStreamVtbl struct {
 	Stat         uintptr
 	Clone        uintptr
 }
+
 type IStream struct {
 	ISequentialStream
 }
@@ -813,6 +830,7 @@ func VariantTimeToUnixTime(vtime float64) int64 {
 	_, offset := time.Now().Zone()
 	return int64((vtime-25569)*86400+0.5) - int64(offset)
 }
+
 func UnixTimeToVariantTime(utime int64) float64 {
 	_, offset := time.Now().Zone()
 	return float64(utime+int64(offset))/86400 + 25569
@@ -828,6 +846,7 @@ type IPortableDevicePropVariantCollectionVtbl struct {
 	Clear      uintptr
 	RemoveAt   uintptr
 }
+
 type IPortableDevicePropVariantCollection struct {
 	IUnknown
 }
@@ -835,6 +854,7 @@ type IPortableDevicePropVariantCollection struct {
 func (o *IPortableDevicePropVariantCollection) Vtable() *IPortableDevicePropVariantCollectionVtbl {
 	return (*IPortableDevicePropVariantCollectionVtbl)(unsafe.Pointer(o.vtbl))
 }
+
 func (o *IPortableDevicePropVariantCollection) Add(pv *PROPVARIANT) (int32, error) {
 	return Syscall(
 		o.Vtable().Add,
@@ -858,6 +878,7 @@ type IPortableDeviceCapabilitiesVtbl struct {
 	GetSupportedEvents           uintptr
 	GetEventOptions              uintptr
 }
+
 type IPortableDeviceCapabilities struct {
 	IUnknown
 }
@@ -865,6 +886,7 @@ type IPortableDeviceCapabilities struct {
 func (o *IPortableDeviceCapabilities) Vtable() *IPortableDeviceCapabilitiesVtbl {
 	return (*IPortableDeviceCapabilitiesVtbl)(unsafe.Pointer(o.vtbl))
 }
+
 func (o *IPortableDeviceCapabilities) GetSupportedCommands() (*IPortableDeviceKeyCollection, int32, error) {
 	var col *IPortableDeviceKeyCollection
 	hr, err := Syscall(
