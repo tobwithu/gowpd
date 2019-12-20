@@ -3,7 +3,7 @@
  Sync MTP devices(Android devices, USB memory, etc) to Windows PC.
  Sync between MTP devices is also possible.
 
-#Usage
+## Usage
 ```
 kfilesync src dst [mode]
 
