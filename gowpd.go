@@ -51,7 +51,9 @@ func Init() error {
 }
 
 func Destroy() {
-	deviceManager.Release()
+	if deviceManager != nil {
+		deviceManager.Release()
+	}
 	CoUninitialize()
 }
 

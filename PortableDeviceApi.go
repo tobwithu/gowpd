@@ -3,6 +3,7 @@
 package gowpd
 
 import (
+	"fmt"
 	"syscall"
 	"time"
 	"unsafe"
@@ -157,7 +158,7 @@ func (o *IPortableDeviceManager) GetDeviceManufacturer(id int) (string, int32, e
 
 func (o *IPortableDeviceManager) ChooseDevice(id int, cInfo *IPortableDeviceValues) (*IPortableDevice, int32, error) {
 	if id >= len(deviceIds) {
-		return nil, -1, nil
+		return nil, -1, fmt.Errorf("Invalied index : %v", id)
 	}
 	var device *IPortableDevice
 	hr, err := CoCreateInstance(CLSID_PortableDeviceFTM, IID_IPortableDevice, &device)

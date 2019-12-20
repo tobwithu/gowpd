@@ -6,8 +6,11 @@ import (
 )
 
 func TestMain(m *testing.M) {
-	Init()
+	err := Init()
 	defer Destroy()
+	if err != nil {
+		panic(err)
+	}
 	os.Exit(m.Run())
 }
 func TestGetDevice(t *testing.T) {
@@ -22,8 +25,8 @@ func TestGetDevice(t *testing.T) {
 	}
 }
 func TestChooseDevice(t *testing.T) {
-	_, hr, _ := ChooseDevice(0)
-	if hr < 0 {
-		t.Errorf("ChooseDevice")
+	_, err := ChooseDevice(0)
+	if err != nil {
+		t.Errorf("%v", err)
 	}
 }
