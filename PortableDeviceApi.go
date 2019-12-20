@@ -131,9 +131,9 @@ func (o *IPortableDeviceManager) getDeviceString(cmd uintptr, id int) (string, i
 		uintptr(0),
 		uintptr(unsafe.Pointer(&len)),
 		0, 0)
-    if hr<0{
-        return "",hr,err
-    }
+	if hr < 0 {
+		return "", hr, err
+	}
 	awchar := make([]uint16, len)
 	hr, err = Syscall6(
 		cmd,
