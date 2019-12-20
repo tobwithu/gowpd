@@ -75,7 +75,7 @@ func handleError(ret uintptr, err syscall.Errno) (int32, error) {
 		return hr, nil
 	}
 	if err == 0 {
-		return hr, fmt.Errorf("Error:%0#x", ret)
+		return hr, fmt.Errorf("Error:%0#x", uint32(ret))
 	}
 	return hr, err
 }
