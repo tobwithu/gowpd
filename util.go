@@ -32,7 +32,7 @@ const (
 
 type GUID syscall.GUID
 
-func CLSIDFromString(s string) *GUID {
+func GUIDFromString(s string) *GUID {
 	var id GUID
 	s = strings.Replace(s, "-", "", -1)
 	ui64, _ := strconv.ParseUint(s[:8], 16, 32)
@@ -105,10 +105,10 @@ func CoUninitialize() {
 
 func CoCreateInstance(clsId string, iid string, p interface{}) (int32, error) {
 	ret, _, err := procCoCreateInstance.Call(
-		uintptr(unsafe.Pointer(CLSIDFromString(clsId))),
+		uintptr(unsafe.Pointer(GUIDFromString(clsId))),
 		0,
 		1,
-		uintptr(unsafe.Pointer(CLSIDFromString(iid))),
+		uintptr(unsafe.Pointer(GUIDFromString(iid))),
 		reflect.ValueOf(p).Pointer())
 	hr := int32(ret)
 	if hr >= 0 {
