@@ -75,9 +75,9 @@ func handleError(ret uintptr, err syscall.Errno) (int32, error) {
 		return hr, nil
 	}
 	if err == 0 {
-		return hr, fmt.Errorf("Error:%#08x", ret)
+		return hr, fmt.Errorf("Error (%#08x)", ret)
 	}
-	return hr, fmt.Errorf("%#08x %v", ret, err)
+	return hr, fmt.Errorf("%v (%#08x)", err, ret)
 }
 
 func Syscall(trap, nargs, a1, a2, a3 uintptr) (int32, error) {
