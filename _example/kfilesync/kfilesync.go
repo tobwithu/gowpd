@@ -12,6 +12,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"sort"
+    "strings"
 	"strconv"
 )
 
@@ -117,7 +118,10 @@ func listMtpFiles(d *gowpd.Device, id string, curPath string, clean bool, list m
 		if o.Name == SYSTEM_VOLUME_INFO {
 			n--
 			continue
-		}
+		} else if strings.HasPrefix(o.Name, ".trashed-"){
+            n--
+            continue
+        }
 		rel := filepath.Join(curPath, o.Name)
 		list[rel] = o
 		if o.IsDir {
